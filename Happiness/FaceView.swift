@@ -34,7 +34,44 @@ class FaceView: UIView {
         facePath.lineWidth = lineWidth
         color.set()
         facePath.stroke()
+        
+        bezierPathForEye(.Left).stroke()
+        bezierPathForEye(.Right).stroke()
+        
 
+    }
+    
+    private struct Scaling {
+        static let FaceRadiusToEyeRadiusRatio: CGFloat = 10
+        static let FaceRadiusToEyeOffsetRatio: CGFloat = 3
+        static let FaceRadiusToEyeSeparationRatio: CGFloat = 1.5
+
+    }
+    
+    private enum Eye { case Left, Right }
+    
+    private func bezierPathForEye(whichEye: Eye) -> UIBezierPath
+    {
+        let eyeRadius = faceRadius / Scaling.FaceRadiusToEyeRadiusRatio
+        let eyeVerticalOffset = faceRadius / Scaling.FaceRadiusToEyeOffsetRatio
+        let eyeHorizontalSeparation = faceRadius / Scaling.FaceRadiusToEyeSeparationRatio
+        
+        var eyeCenter = faceCenter
+        eyeCenter.y -= eyeVerticalOffset
+        switch whichEye {
+        case .Left: eyeCenter.x -= eyeHorizontalSeparation / 2
+        case .Right: eyeCenter.x += eyeHorizontalSeparation / 2
+        }
+        
+        let path = UIBezierPath(
+            arcCenter: eyeCenter,
+            radius: eyeRadius,
+            startAngle: 0,
+            endAngle: CGFloat(2*M_PI),
+            clockwise: true
+        )
+        path.lineWidth = lineWidth
+        return path
     }
     
     
